@@ -167,7 +167,6 @@ class LineBotTextMessageHandler {
                   contents: [
                     {
                       type: "text",
-                      text: "神奈川県",
                       color: "#8C8C8C",
                       size: "sm",
                       wrap: true,
