@@ -118,9 +118,9 @@ class LineBotTextMessageHandler {
                   text:
                     `${eew.hypo_name} 予想最大震度${eew.forecast_max_lpgm_intensity}` +
                     (eew.forecast_max_intensity_is_over ? "以上" : "") +
-                    (eew.forecast_max_lpgm_intensity !== "0")
-                      ? `(最大LPGM${eew.forecast_max_intensity})`
-                      : "",
+                    (eew.forecast_max_lpgm_intensity !== "0"
+                      ? `(最大LPGM${eew.forecast_max_lpgm_intensity})`
+                      : ""),
                   size: "lg",
                   color: textColor,
                 },
