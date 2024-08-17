@@ -139,6 +139,17 @@ class LineBotTextMessageHandler {
                   size: "sm",
                   color: textColor + "BB",
                 },
+
+                {
+                  type: "text",
+                  text:
+                    (eew.is_warning ? "【警報】" : "") +
+                    `第${eew.serial_no}報` +
+                    (eew.is_canceled ? " (キャンセル)" : "") +
+                    (eew.is_last_info ? " (最終報)" : ""),
+                  size: "sm",
+                  color: textColor + "BB",
+                },
               ],
               backgroundColor:
                 jmaIntensityToColor(eew.forecast_max_intensity ?? "0") + "AA",
