@@ -90,8 +90,14 @@ class LineBotTextMessageHandler {
     replyToken: string,
     supabase: SupabaseClient<Database>
   ): Promise<void> {
-    // group by event_id, get max of serial_no
     const { data, error } = await supabase.from("eew_latest").select("*");
+    /* for debugging use
+    const { data, error } = await supabase
+      .from("eew")
+      .select("*")
+      .order("forecast_max_intensity", { ascending: false, nullsFirst: false })
+      .limit(1);
+      */
     if (error) {
       throw error;
     }
