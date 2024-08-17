@@ -19,13 +19,18 @@ export const textEventHandler = async (
 
   const handler = new LineBotTextMessageHandler();
   switch (text) {
-    case "最近の地震履歴":
+    case "最近の地震履歴": {
       await handler.onEarthquakeHistoryTextMessage(
         client,
         replyToken,
         supabase
       );
       break;
+    }
+    case "最近の緊急地震速報": {
+      await handler.onEewHistoryTextMessage(client, replyToken, supabase);
+      break;
+    }
     default:
       await handler.onUnknownTextMessage(client, replyToken);
       break;
@@ -56,6 +61,15 @@ class LineBotTextMessageHandler {
               },
               style: "primary",
             },
+            {
+              type: "button",
+              action: {
+                type: "message",
+                label: "最近の緊急地震速報を確認する",
+                text: "最近の緊急地震速報",
+              },
+              style: "primary",
+            },
           ],
         },
       },
@@ -64,6 +78,134 @@ class LineBotTextMessageHandler {
     const replyMessageRequest: line.messagingApi.ReplyMessageRequest = {
       replyToken: replyToken,
       messages: [response],
+    };
+
+    await client.replyMessage(replyMessageRequest);
+  }
+
+  async onEewHistoryTextMessage(
+    client: line.messagingApi.MessagingApiClient,
+    replyToken: string,
+    supabase: SupabaseClient<Database>
+  ): Promise<void> {
+    // group by event_id, get max of serial_no
+    const { data, error } = await supabase.from("eew_latest").select("*");
+    if (error) {
+      throw error;
+    }
+
+    const messages: line.messagingApi.FlexMessage = {
+      type: "flex",
+      altText: "This is a Flex Message",
+      contents: {
+        type: "carousel",
+        contents: data.map((eew) => {
+          const isBackgroundDark =
+            eew.forecast_max_intensity === "0" ||
+            eew.forecast_max_intensity === "1";
+          const textColor = isBackgroundDark ? "#000000" : "#FFFFFF";
+          const carousel: line.messagingApi.FlexBubble = {
+            type: "bubble",
+            size: "mega",
+            header: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "text",
+                  text:
+                    `${eew.hypo_name} 予想最大震度${eew.forecast_max_lpgm_intensity}` +
+                    (eew.forecast_max_intensity_is_over ? "以上" : "") +
+                    (eew.forecast_max_lpgm_intensity !== "0")
+                      ? `(最大LPGM${eew.forecast_max_intensity})`
+                      : "",
+                  size: "lg",
+                  color: textColor,
+                },
+                {
+                  type: "text",
+                  text: `M ${eew.magnitude} 深さ${eew.depth}km`,
+                  color: textColor,
+                  align: "start",
+                  size: "md",
+                  gravity: "center",
+                  margin: "lg",
+                },
+                {
+                  type: "text",
+                  text: `予想発生時刻: ${eew.origin_time?.slice(0, 19)}`,
+                  size: "sm",
+                  color: textColor + "BB",
+                },
+              ],
+              backgroundColor:
+                jmaIntensityToColor(eew.forecast_max_intensity ?? "0") + "AA",
+              paddingTop: "19px",
+              paddingAll: "12px",
+              paddingBottom: "16px",
+            },
+            body: {
+              type: "box",
+              layout: "vertical",
+              contents: [
+                {
+                  type: "box",
+                  layout: "horizontal",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "神奈川県",
+                      color: "#8C8C8C",
+                      size: "sm",
+                      wrap: true,
+                      weight: "bold",
+                      contents: (
+                        eew.regions as {
+                          name: string;
+                          forecastMaxInt: {
+                            from: Database["public"]["Enums"]["jma_intensity"];
+                            to: Database["public"]["Enums"]["jma_intensity"];
+                          };
+                        }[]
+                      )
+                        .map((regions) => {
+                          const l: line.messagingApi.FlexSpan[] = [
+                            {
+                              type: "span",
+                              text: `${regions.name} `,
+                              weight: "bold",
+                            },
+                            {
+                              type: "span",
+                              text: `震度${regions.forecastMaxInt.from} ~ 震度${regions.forecastMaxInt.to} \n`,
+                              weight: "regular",
+                            },
+                          ];
+                          return l;
+                        })
+                        .flat(),
+                    },
+                  ],
+                  flex: 1,
+                },
+              ],
+              spacing: "md",
+              paddingAll: "12px",
+            },
+            styles: {
+              footer: {
+                separator: false,
+              },
+            },
+          };
+          return carousel;
+        }),
+      },
+    };
+
+    const replyMessageRequest: line.messagingApi.ReplyMessageRequest = {
+      replyToken: replyToken,
+      messages: [messages],
     };
 
     await client.replyMessage(replyMessageRequest);
@@ -210,7 +352,9 @@ class LineBotTextMessageHandler {
 }
 
 function jmaIntensityToColor(
-  intensity: Database["public"]["Enums"]["jma_intensity"]
+  intensity:
+    | Database["public"]["Enums"]["jma_intensity"]
+    | Database["public"]["Enums"]["jma_lg_intensity"]
 ): string {
   // まあまあ、雑に気象庁震度配色を使ってみますかね
   switch (intensity) {
@@ -253,6 +397,10 @@ function jmaIntensityToColor(
     case "7": {
       // 180,0,104
       return "#B40068";
+    }
+    default: {
+      const _exhaustiveCheck: never = intensity;
+      return _exhaustiveCheck;
     }
   }
 }
