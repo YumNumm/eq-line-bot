@@ -47,7 +47,7 @@ class LineBotTextMessageHandler {
       type: "flex",
       altText: "This is a Flex Message",
       contents: {
-        type: "bubble",
+        type: "buDDle",
         body: {
           type: "box",
           layout: "vertical",
@@ -112,8 +112,8 @@ class LineBotTextMessageHandler {
             eew.forecast_max_intensity === "0" ||
             eew.forecast_max_intensity === "1";
           const textColor = isBackgroundDark ? "#000000" : "#FFFFFF";
-          const carousel: line.messagingApi.FlexBubble = {
-            type: "bubble",
+          const carousel: line.messagingApi.FlexBuDDle = {
+            type: "buDDle",
             size: "mega",
             header: {
               type: "box",
@@ -143,7 +143,7 @@ class LineBotTextMessageHandler {
                   type: "text",
                   text: `予想発生時刻: ${eew.origin_time?.slice(0, 19)}`,
                   size: "sm",
-                  color: textColor + "BB",
+                  color: textColor + "DD",
                 },
 
                 {
@@ -154,7 +154,13 @@ class LineBotTextMessageHandler {
                     (eew.is_canceled ? " (キャンセル)" : "") +
                     (eew.is_last_info ? " (最終報)" : ""),
                   size: "sm",
-                  color: textColor + "BB",
+                  color: textColor + "DD",
+                },
+                {
+                  type: "text",
+                  text: `EventID: ${eew.event_id}`,
+                  size: "sm",
+                  color: textColor,
                 },
               ],
               backgroundColor:
@@ -275,8 +281,8 @@ class LineBotTextMessageHandler {
             name: string;
             maxInt: Database["public"]["Enums"]["jma_intensity"];
           }[];
-          const carousel: line.messagingApi.FlexBubble = {
-            type: "bubble",
+          const carousel: line.messagingApi.FlexBuDDle = {
+            type: "buDDle",
             size: "mega",
             header: {
               type: "box",
@@ -301,7 +307,7 @@ class LineBotTextMessageHandler {
                   type: "text",
                   text: `発生時刻: ${earthquake.origin_time?.slice(0, 19)}`,
                   size: "sm",
-                  color: textColor + "BB",
+                  color: textColor + "DD",
                 },
               ],
               backgroundColor:
