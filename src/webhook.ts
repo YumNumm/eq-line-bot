@@ -116,7 +116,7 @@ class LineBotTextMessageHandler {
                 {
                   type: "text",
                   text:
-                    `${eew.hypo_name} 予想最大震度${eew.forecast_max_lpgm_intensity}` +
+                    `${eew.hypo_name} 予想最大震度${eew.forecast_max_intensity}` +
                     (eew.forecast_max_intensity_is_over ? "以上" : "") +
                     (eew.forecast_max_lpgm_intensity !== "0"
                       ? `(最大LPGM${eew.forecast_max_lpgm_intensity})`
@@ -153,9 +153,9 @@ class LineBotTextMessageHandler {
               ],
               backgroundColor:
                 jmaIntensityToColor(eew.forecast_max_intensity ?? "0") + "AA",
-              paddingTop: "19px",
+              paddingTop: "12px",
               paddingAll: "12px",
-              paddingBottom: "16px",
+              paddingBottom: "12px",
             },
             body: {
               type: "box",
@@ -167,6 +167,7 @@ class LineBotTextMessageHandler {
                   contents: [
                     {
                       type: "text",
+                      text: "地域ごとの予想震度は発表されていません",
                       color: "#8C8C8C",
                       size: "sm",
                       wrap: true,
