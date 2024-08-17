@@ -1,0 +1,16 @@
+{
+  "name": "eq-line-bot",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts"
+  },
+  "dependencies": {
+    "@line/bot-sdk": "^9.2.2",
+    "@supabase/supabase-js": "^2.45.1",
+    "hono": "^4.5.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240529.0",
+    "wrangler": "^3.57.2"
+  }
+}
