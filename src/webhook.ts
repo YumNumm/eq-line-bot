@@ -60,6 +60,7 @@ class LineBotTextMessageHandler {
                 text: "最近の地震履歴",
               },
               style: "primary",
+              margin: "4px",
             },
             {
               type: "button",
@@ -69,6 +70,7 @@ class LineBotTextMessageHandler {
                 text: "最近の緊急地震速報",
               },
               style: "primary",
+              margin: "4px",
             },
           ],
         },
