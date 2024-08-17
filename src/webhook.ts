@@ -47,7 +47,7 @@ class LineBotTextMessageHandler {
       type: "flex",
       altText: "This is a Flex Message",
       contents: {
-        type: "buDDle",
+        type: "bubble",
         body: {
           type: "box",
           layout: "vertical",
@@ -112,8 +112,8 @@ class LineBotTextMessageHandler {
             eew.forecast_max_intensity === "0" ||
             eew.forecast_max_intensity === "1";
           const textColor = isBackgroundDark ? "#000000" : "#FFFFFF";
-          const carousel: line.messagingApi.FlexBuDDle = {
-            type: "buDDle",
+          const carousel: line.messagingApi.FlexBubble = {
+            type: "bubble",
             size: "mega",
             header: {
               type: "box",
@@ -191,6 +191,9 @@ class LineBotTextMessageHandler {
                             from: Database["public"]["Enums"]["jma_intensity"];
                             to: Database["public"]["Enums"]["jma_intensity"];
                           };
+                          arrivalTime: string | null;
+                          isPlum: boolean;
+                          isWarning: boolean;
                         }[]
                       )
                         .map((regions) => {
@@ -202,10 +205,38 @@ class LineBotTextMessageHandler {
                             },
                             {
                               type: "span",
-                              text: `震度${regions.forecastMaxInt.from} ~ 震度${regions.forecastMaxInt.to} \n`,
+                              text: `震度${regions.forecastMaxInt.from} ~ 震度${regions.forecastMaxInt.to}`,
                               weight: "regular",
                             },
                           ];
+
+                          if (regions.isPlum) {
+                            l.push({
+                              type: "span",
+                              text: " PLUM法 ",
+                              weight: "regular",
+                            });
+                          }
+                          if (regions.arrivalTime) {
+                            l.push({
+                              type: "span",
+                              text: `到達時刻: ${regions.arrivalTime} \n`,
+                              weight: "regular",
+                            });
+                          } else {
+                            l.push({
+                              type: "span",
+                              text: "到達時刻: 不明 \n",
+                              weight: "regular",
+                            });
+                          }
+                          if (regions.isWarning) {
+                            l.unshift({
+                              type: "span",
+                              text: "【警報】",
+                              weight: "bold",
+                            });
+                          }
                           return l;
                         })
                         .flat(),
@@ -281,8 +312,8 @@ class LineBotTextMessageHandler {
             name: string;
             maxInt: Database["public"]["Enums"]["jma_intensity"];
           }[];
-          const carousel: line.messagingApi.FlexBuDDle = {
-            type: "buDDle",
+          const carousel: line.messagingApi.FlexBubble = {
+            type: "bubble",
             size: "mega",
             header: {
               type: "box",
