@@ -3,7 +3,7 @@ import { cors } from "hono/cors";
 import { Bindings } from "./global";
 import { HTTPException } from "hono/http-exception";
 import * as line from "@line/bot-sdk";
-import { textEventHandler } from "./webhook";
+import { textEventHandler } from "./event_handler";
 
 const app = new Hono<{ Bindings: Bindings }>();
 

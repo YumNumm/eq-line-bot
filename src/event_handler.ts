@@ -305,7 +305,8 @@ class LineBotTextMessageHandler {
         contents: earthquakeHistory.map((earthquake) => {
           const isBackgroundDark =
             earthquake.max_intensity === "0" ||
-            earthquake.max_intensity === "1";
+            earthquake.max_intensity === "1" ||
+            earthquake.max_intensity === null;
           const textColor = isBackgroundDark ? "#000000" : "#FFFFFF";
           const regions = earthquake.intensity_regions as {
             code: string;
@@ -314,7 +315,7 @@ class LineBotTextMessageHandler {
           }[];
           const carousel: line.messagingApi.FlexBubble = {
             type: "bubble",
-            size: "mega",
+            size: "hecto",
             header: {
               type: "box",
               layout: "vertical",
@@ -327,7 +328,13 @@ class LineBotTextMessageHandler {
                 },
                 {
                   type: "text",
-                  text: `M ${earthquake.magnitude} 深さ${earthquake.depth}km`,
+                  text:
+                    (earthquake.magnitude !== null
+                      ? `M ${earthquake.magnitude?.toFixed(1)} `
+                      : "") +
+                    (earthquake.depth !== null
+                      ? `深さ${earthquake.depth}km`
+                      : "深さ不明"),
                   color: textColor,
                   align: "start",
                   size: "md",
@@ -337,6 +344,12 @@ class LineBotTextMessageHandler {
                 {
                   type: "text",
                   text: `発生時刻: ${earthquake.origin_time?.slice(0, 19)}`,
+                  size: "sm",
+                  color: textColor + "DD",
+                },
+                {
+                  type: "text",
+                  text: `EventID: ${earthquake.event_id}`,
                   size: "sm",
                   color: textColor + "DD",
                 },
@@ -357,12 +370,12 @@ class LineBotTextMessageHandler {
                   contents: [
                     {
                       type: "text",
-                      text: "神奈川県",
+                      text: "震度1以上の揺れは観測されていません",
                       color: "#8C8C8C",
                       size: "sm",
                       wrap: true,
                       weight: "bold",
-                      contents: regions
+                      contents: (regions ?? [])
                         .map((regions) => {
                           const l: line.messagingApi.FlexSpan[] = [
                             {
