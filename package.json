@@ -7,7 +7,7 @@
   "dependencies": {
     "@line/bot-sdk": "^9.2.2",
     "@supabase/supabase-js": "^2.45.1",
-    "hono": "^4.5.6"
+    "hono": "^4.10.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240529.0",
